@@ -1,0 +1,381 @@
+<title>CustomPay Secure Payment Capture</title>
+<style>
+  :root{
+    --page-bg:#f4f6f9;
+    --card-bg:#ffffff;
+    --border:#e3e7ee;
+    --border-strong:#d4dae4;
+    --text:#1e293b;
+    --text-muted:#64748b;
+    --text-faint:#94a3b8;
+    --label:#334155;
+    --accent:#2563eb;
+    --accent-dark:#1d4ed8;
+    --accent-bg:#eff4ff;
+    --required:#e0392b;
+    --disabled-bg:#f1f5f9;
+    --active-bg:#fefbeb;
+    --active-border:#eab54d;
+    --brand-green:#16a34a;
+    --brand-orange:#c2540a;
+    --shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --page-bg:#0f1420;
+      --card-bg:#161c2b;
+      --border:#28304487;
+      --border-strong:#333d54;
+      --text:#e7ebf3;
+      --text-muted:#9aa5b8;
+      --text-faint:#6b7690;
+      --accent:#5b8def;
+      --accent-dark:#7ba3f5;
+      --accent-bg:#1b2740;
+      --required:#f2695c;
+      --disabled-bg:#1d2434;
+      --active-bg:#2a2415;
+      --active-border:#b8862f;
+      --brand-green:#3fbf6d;
+      --brand-orange:#e08a3f;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --page-bg:#0f1420;
+    --card-bg:#161c2b;
+    --border:#28304487;
+    --border-strong:#333d54;
+    --text:#e7ebf3;
+    --text-muted:#9aa5b8;
+    --text-faint:#6b7690;
+    --accent:#5b8def;
+    --accent-dark:#7ba3f5;
+    --accent-bg:#1b2740;
+    --required:#f2695c;
+    --disabled-bg:#1d2434;
+    --active-bg:#2a2415;
+    --active-border:#b8862f;
+    --brand-green:#3fbf6d;
+    --brand-orange:#e08a3f;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--page-bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:40px 16px 64px;
+  }
+  .wrap{max-width:560px;margin:0 auto;}
+  .card{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .card-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 22px;
+    border-bottom:1px solid var(--border);
+  }
+  .badge-id{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12.5px;font-weight:600;color:var(--text-muted);
+    border:1px solid var(--border-strong);
+    padding:4px 10px;border-radius:7px;
+    background:var(--disabled-bg);
+  }
+  .powered{
+    display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-faint);
+  }
+  .powered .brand{
+    display:flex;align-items:center;gap:6px;font-weight:700;color:var(--brand-orange);
+    font-size:13px;
+  }
+  .brand-icon{
+    width:20px;height:20px;border-radius:6px;background:var(--brand-green);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;
+  }
+  .body-pad{padding:22px;}
+  .field{margin-bottom:18px;}
+  .field label{
+    display:flex;align-items:center;gap:8px;
+    font-size:13.5px;font-weight:600;color:var(--label);margin-bottom:7px;
+  }
+  .field label .req{color:var(--required);font-weight:700;}
+  .field label .hint{font-weight:400;color:var(--text-faint);font-size:12px;}
+  .new-badge{
+    font-size:10.5px;font-weight:700;color:var(--accent);
+    border:1px solid var(--accent);border-radius:999px;
+    padding:1px 8px;letter-spacing:.02em;
+  }
+  .field.highlight label{color:var(--accent);}
+
+  input, .select-fake, select{
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid var(--border-strong);
+    background:var(--card-bg);
+    color:var(--text);
+    font-size:14px;
+    font-family:inherit;
+    outline:none;
+  }
+  input::placeholder{color:var(--text-faint);}
+  input:focus, select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+  input[disabled]{background:var(--disabled-bg);color:var(--text-faint);cursor:not-allowed;}
+
+  .select-wrap{position:relative;}
+  .select-wrap select{
+    appearance:none;-webkit-appearance:none;-moz-appearance:none;
+    padding-right:36px;cursor:pointer;
+  }
+  .select-wrap input{
+    padding-right:36px;cursor:pointer;
+  }
+  .select-wrap svg{
+    position:absolute;right:12px;top:50%;transform:translateY(-50%);
+    width:16px;height:16px;pointer-events:none;color:var(--text-faint);
+  }
+  .select-wrap.dashed select,
+  .select-wrap.dashed input{
+    border-style:dashed;border-color:var(--accent);color:var(--text);
+  }
+  .select-wrap.dashed select:invalid{color:var(--text-faint);}
+  .select-wrap.dashed select option{color:var(--text);}
+
+  fieldset.panel{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px;
+    margin:0 0 18px 0;
+  }
+  fieldset.panel legend{
+    font-size:14.5px;font-weight:700;color:var(--text);
+    padding:0 4px;
+  }
+  .panel .field:last-child{margin-bottom:0;}
+
+  .row-input{display:flex;gap:8px;align-items:stretch;}
+  .row-input input{flex:1;}
+  .icon-btn{
+    width:40px;flex:0 0 40px;
+    border-radius:8px;border:1px solid var(--border-strong);
+    background:var(--disabled-bg);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-muted);cursor:pointer;
+  }
+  .icon-btn svg{width:16px;height:16px;}
+  .active-input input{background:var(--active-bg);border-color:var(--active-border);}
+  .active-input .icon-btn{background:var(--active-bg);border-color:var(--active-border);color:var(--brand-orange);}
+  .digit-count{font-weight:400;color:var(--text-faint);font-size:12.5px;}
+
+  .checkbox-row{
+    display:flex;align-items:flex-start;gap:10px;margin-top:16px;
+  }
+  .checkbox-row input[type="checkbox"]{
+    width:17px;height:17px;flex:0 0 17px;margin-top:1px;
+    accent-color:var(--accent);width:17px;padding:0;
+  }
+  .checkbox-row .cb-text{font-size:13.5px;color:var(--text);}
+  .checkbox-row .cb-sub{font-size:12px;color:var(--text-faint);margin-top:2px;}
+
+  .helper{font-size:12px;color:var(--text-faint);margin-top:6px;}
+  .helper.err{color:var(--required);}
+
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+  .btn-collect{
+    flex:1 1 auto;min-width:120px;
+    background:var(--accent);color:#fff;border:none;
+    padding:10px 14px;border-radius:8px;font-weight:700;font-size:13px;
+    cursor:pointer;
+  }
+  .btn-collect:hover{background:var(--accent-dark);}
+
+  .action-row{display:flex;gap:10px;margin-top:20px;}
+  .btn-secondary{
+    flex:1;padding:12px 16px;border-radius:9px;font-weight:700;font-size:14px;
+    border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  }
+  .btn-secondary:hover{background:var(--accent-bg);}
+  .btn-primary{
+    flex:1.3;padding:12px 16px;border-radius:9px;font-weight:700;font-size:14px;
+    border:none;color:#fff;background:linear-gradient(180deg,var(--accent),var(--accent-dark));
+    cursor:pointer;
+  }
+  .btn-primary:hover{filter:brightness(1.05);}
+</style>
+
+<div class="wrap">
+  <div class="card">
+    <div class="card-head">
+      <span class="badge-id">🧾 #8140</span>
+      <span class="powered">
+        Powered by
+        <span class="brand"><span class="brand-icon">💳</span>custompay 🔒</span>
+      </span>
+    </div>
+
+    <div class="body-pad">
+
+      <div class="field highlight">
+        <label>Payment Type <span class="req">*</span> <span class="new-badge">NEW FIELD</span></label>
+        <div class="select-wrap dashed">
+          <select id="paymentType" required autocomplete="off" onchange="handlePaymentTypeChange(this.value)">
+            <option value="" selected disabled hidden>Select payment type...</option>
+            <option value="non-binder">Non-Binder Payment</option>
+            <option value="bcn">BCN – Binder Payment</option>
+            <option value="bcbsm">BCBSM – Binder Payment</option>
+          </select>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="field">
+        <label id="billingIdLabel">Billing Account Number / Payment Transaction ID <span class="req">*</span></label>
+        <input type="text" id="billingIdField" placeholder="Select a payment type above first" disabled>
+      </div>
+
+      <div class="field">
+        <label>Account Holder Name <span class="req">*</span></label>
+        <input type="text" placeholder="Full name on account">
+      </div>
+
+      <div class="field">
+        <label>Amount <span class="req">*</span> <span class="hint">(read from ACI screen, entered by CSR)</span></label>
+        <input type="text" placeholder="0.00">
+      </div>
+
+      <div class="field">
+        <label>State <span class="req">*</span></label>
+        <div class="select-wrap">
+          <select required>
+            <option value="" selected disabled>Select a state...</option>
+            <option>Alabama</option>
+            <option>California</option>
+            <option>New York</option>
+            <option>Texas</option>
+          </select>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:22px;">
+        <label>Postal Code <span class="req">*</span></label>
+        <input type="text" placeholder="ZIP / Postal code">
+      </div>
+
+      <fieldset class="panel">
+        <legend>Card Collection</legend>
+
+        <div class="field active-input">
+          <label>Card Number <span class="digit-count">— 0 digits collected</span></label>
+          <div class="row-input">
+            <input type="text" placeholder="•••• •••• •••• ••••" readonly>
+            <button type="button" class="icon-btn" title="Reset">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Re-enter Card Number</label>
+          <input type="text" placeholder="Re-type card number to confirm">
+          <div class="helper">Must match the card number collected above.</div>
+        </div>
+
+        <div class="field">
+          <label>Expiry Date (MM/YY)</label>
+          <div class="row-input">
+            <input type="text" placeholder="MM/YY" disabled>
+            <button type="button" class="icon-btn" title="Reset">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom:0;">
+          <label>CVV (3–4 digits)</label>
+          <div class="row-input">
+            <input type="text" placeholder="•••" disabled>
+            <button type="button" class="icon-btn" title="Reset">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox">
+          <span>
+            <span class="cb-text">Save card for future reference</span>
+            <div class="cb-sub">Multi-use — this method can be reused for future funding without re-collecting details.</div>
+          </span>
+        </label>
+      </fieldset>
+
+      <fieldset class="panel">
+        <legend>Speech Recognition</legend>
+        <div class="field" style="margin-bottom:0;">
+          <label>Language <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select><option>English</option><option>Spanish</option><option>French</option></select>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="btn-row">
+        <button type="button" class="btn-collect">Collect Card Number</button>
+        <button type="button" class="btn-collect">Collect Expiry Date</button>
+        <button type="button" class="btn-collect">Collect CVV</button>
+      </div>
+
+      <div class="action-row">
+        <button type="button" class="btn-secondary">+ Add Funding</button>
+        <button type="button" class="btn-primary">Process</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function handlePaymentTypeChange(value) {
+    var field = document.getElementById('billingIdField');
+    var label = document.getElementById('billingIdLabel');
+    if (!field || !label) return;
+    if (value === 'non-binder') {
+      field.disabled = false;
+      field.placeholder = 'Enter Billing Account Number';
+      label.innerHTML = 'Billing Account Number <span class="req">*</span>';
+    } else if (value === 'bcn' || value === 'bcbsm') {
+      field.disabled = false;
+      field.placeholder = 'Enter Payment Transaction ID';
+      label.innerHTML = 'Payment Transaction ID <span class="req">*</span>';
+    } else {
+      field.disabled = true;
+      field.value = '';
+      field.placeholder = 'Select a payment type above first';
+      label.innerHTML = 'Billing Account Number / Payment Transaction ID <span class="req">*</span>';
+    }
+  }
+
+  // Force the Payment Type field to always start blank — some browsers
+  // restore the last-picked <select> value on refresh / back-forward
+  // navigation (bfcache), which made it look like "Non-Binder Payment"
+  // was pre-selected. Reset it explicitly on every page load/show.
+  function resetPaymentType() {
+    var select = document.getElementById('paymentType');
+    if (select) {
+      select.selectedIndex = 0;
+      handlePaymentTypeChange('');
+    }
+  }
+  resetPaymentType();
+  window.addEventListener('pageshow', resetPaymentType);
+</script>
